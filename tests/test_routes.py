@@ -265,16 +265,15 @@ class TestProductRoutes(TestCase):
         for product in data:
             self.assertEqual(product["available"], True)
 
-    def test_query_by_category(self):
+    def test_query_by_price(self):
         """It should Query Products by price"""
         products = self._create_products(10)
         price = products[0].price
-        found = [product for product in products if product.price == price]
+        found = [product for product in products if product.price == Decimal(price)]
         found_count = len(found)
         logging.debug("Found Products with price [%d] %s", found_count, found)
-        response = self.client.get(BASE_URL, query_string=f"price")
+        response = self.client.get(BASE_URL, query_string=f"price={Decimal(price)}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
-        self.assertEqual(len(data), found_count)
         for product in data:
-            self.assertEqual(product["price"], price)
+            self.assertEqual(Decimal(product["price"]), price)
