@@ -264,3 +264,17 @@ class TestProductRoutes(TestCase):
         self.assertEqual(len(data), available_count)
         for product in data:
             self.assertEqual(product["available"], True)
+
+    def test_query_by_category(self):
+        """It should Query Products by price"""
+        products = self._create_products(10)
+        price = products[0].price
+        found = [product for product in products if product.price == price]
+        found_count = len(found)
+        logging.debug("Found Products with price [%d] %s", found_count, found)
+        response = self.client.get(BASE_URL, query_string=f"price")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), found_count)
+        for product in data:
+            self.assertEqual(product["price"], price)
